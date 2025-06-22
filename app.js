@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Service Worker Registration ---
     if ('serviceWorker' in navigator) {
-        // Register service worker relative to the root for GitHub Pages compatibility
-        navigator.serviceWorker.register('/service-worker.js')
+        // Register service worker relative to the current script's location
+        // This is crucial for GitHub Pages projects hosted in subdirectories.
+        navigator.serviceWorker.register('./service-worker.js')
             .then((registration) => {
                 console.log('Service Worker registered with scope:', registration.scope);
             })
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeInstallPromptButton = document.getElementById('close-install-prompt');
 
     window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('beforeinstallprompt event fired.'); // Debugging log
         // Prevent Chrome 67 and earlier from automatically showing the prompt
         e.preventDefault();
         // Stash the event so it can be triggered later.
@@ -318,9 +320,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="delete-history-item text-gray-400 hover:text-[#E74C3C] transition-colors" data-id="${entry.id}" aria-label="হিসাব মুছুন">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm2 3a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                </button>
-            `;
+                            </svg>
+                        </button>
+                    `;
             historyList.appendChild(div);
         });
 
