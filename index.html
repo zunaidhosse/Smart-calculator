@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Bill Calc & Photo Receipt</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
+    <!-- External CSS Link -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas CDN (for generating PNG bills) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+</head>
+<body class="min-h-screen">
+
+    <!-- Toast Message Container -->
+    <div id="toast-message" class="fixed top-5 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300 opacity-0 pointer-events-none">
+        বিল গ্যালারিতে সংরক্ষিত হয়েছে!
+    </div>
+
+    <!-- Main App Container -->
+    <div class="glass-panel rounded-xl shadow-2xl p-6 w-full h-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl flex flex-col relative sm:h-auto">
+        <!-- Settings Icon (Dot Icon) -->
+        <button id="settings-icon-btn" class="absolute top-2 right-4 text-white text-3xl font-bold p-1 rounded-full hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#1ABC9C]" aria-label="সেটিংস">
+            &#x2022;&#x2022;&#x2022; <!-- Unicode for three dots -->
+        </button>
+
+        <!-- Header for view toggle -->
+        <div class="flex justify-between mb-4">
+            <button id="calculator-view-btn" class="py-2 px-4 rounded-lg font-bold transition-colors bg-[#1ABC9C] text-white">
+                ক্যালকুলেটর
+            </button>
+            <button id="history-view-btn" class="py-2 px-4 rounded-lg font-bold transition-colors bg-gray-700 text-gray-300 hover:bg-gray-600">
+                ইতিহাস ও বিল
+            </button>
+        </div>
+
+        <!-- Calculator View -->
+        <div id="calculator-view" class="flex flex-col flex-grow"> <!-- flex-grow to take available height -->
+            <!-- Display Area -->
+            <div class="glass-display rounded-lg p-5 mb-4 text-right overflow-hidden shadow-inner h-32 flex flex-col justify-end">
+                <div id="current-expression" class="text-gray-300 text-xl font-mono truncate h-8"></div>
+                <div id="current-result" class="text-white text-5xl font-bold font-mono h-20 flex items-end justify-end">0</div>
+            </div>
+
+            <!-- Buttons Grid -->
+            <div class="grid grid-cols-4 gap-3 text-2xl font-semibold">
+                <!-- Row 1 -->
+                <button class="calc-btn ac-btn col-span-1 glass-btn-red text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">AC</button>
+                <button class="calc-btn ce-btn col-span-1 glass-btn-red text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">CE</button>
+                <button class="calc-btn op-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">%</button>
+                <button class="calc-btn op-btn glass-btn-accent text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">÷</button>
+
+                <!-- Row 2 -->
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">7</button>
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">8</button>
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">9</button>
+                <button class="calc-btn op-btn glass-btn-accent text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">×</button>
+
+                <!-- Row 3 -->
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">4</button>
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">5</button>
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">6</button>
+                <button class="calc-btn op-btn glass-btn-accent text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">-</button>
+
+                <!-- Row 4 -->
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">1</button>
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">2</button>
+                <button class="calc-btn num-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">3</button>
+                <button class="calc-btn op-btn glass-btn-accent text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">+</button>
+
+                <!-- Row 5 -->
+                <button class="calc-btn num-btn col-span-2 glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">0</button>
+                <button class="calc-btn dot-btn glass-btn-dark text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">.</button>
+                <button class="calc-btn equals-btn glass-btn-accent text-white h-16 rounded-lg shadow-md hover:brightness-110 active:brightness-90 transition-all duration-100">=</button>
+            </div>
+        </div>
+
+        <!-- History & Bill Log View (Initially hidden) -->
+        <div id="history-view" class="flex flex-col flex-grow hidden"> <!-- flex-grow to take available height -->
+            <!-- History Management Buttons -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button id="select-all-history-btn" class="flex-1 min-w-[120px] py-2 px-3 rounded-lg bg-[#1ABC9C] text-white font-bold hover:brightness-110 active:brightness-90 transition-colors">
+                    সব নির্বাচন করুন
+                </button>
+                <button id="deselect-all-history-btn" class="flex-1 min-w-[120px] py-2 px-3 rounded-lg bg-gray-600 text-white font-bold hover:brightness-110 active:brightness-90 transition-colors">
+                    সব বাতিল করুন
+                </button>
+                <button id="clear-all-history-btn" class="flex-1 min-w-[120px] py-2 px-3 rounded-lg bg-[#E74C3C] text-white font-bold hover:brightness-110 active:brightness-90 transition-colors">
+                    সব ইতিহাস মুছুন
+                </button>
+            </div>
+
+            <!-- Individual Calculation History List -->
+            <h2 class="text-xl font-bold mb-3">হিসাবের ইতিহাস</h2>
+            <div id="history-list" class="glass-panel rounded-lg p-4 max-h-64 overflow-y-auto mb-4 custom-scrollbar">
+                <p class="text-gray-400 text-center">কোনো হিসাবের ইতিহাস নেই।</p>
+            </div>
+
+            <!-- Bill Summary and Generation -->
+            <div class="glass-panel rounded-lg p-4 mb-4 shadow-inner">
+                <h3 class="text-lg font-bold mb-2">বিল সারাংশ</h3>
+                <div class="flex justify-between items-center mb-2">
+                    <span id="bill-subtotal-label" class="text-gray-300">সাবটোটাল:</span>
+                    <span id="bill-subtotal" class="text-white text-xl font-bold">0.00</span>
+                </div>
+                <div class="border-b-2 border-gray-500 mb-4"></div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-300 text-xl font-bold">মোট বিল:</span>
+                    <span id="bill-grand-total" class="text-white text-3xl font-bold text-[#1ABC9C]">0.00</span>
+                </div>
+
+                <button id="generate-bill-btn" class="w-full py-3 rounded-lg bg-[#1ABC9C] text-white text-xl font-bold shadow-md hover:brightness-110 active:brightness-90 transition-colors">
+                    বিল তৈরি করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Bill Content for PNG generation -->
+    <div id="bill-content-template" style="
+        font-family: 'Inter', sans-serif;
+        width: 380px; /* Fixed width for bill generation consistency */
+        padding: 20px;
+        background-color: #F8F8F8; /* Light grey background for bill */
+        color: #333333; /* Dark text color */
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        display: none; /* Hidden by default, made visible during capture */
+    ">
+        <!-- Bill Header -->
+        <div style="text-align: center; margin-bottom: 15px;">
+            <h1 id="bill-template-header-title" style="font-size: 24px; font-weight: bold; margin: 0 0 10px 0;">EXPENSE SUMMARY</h1>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px;">
+                <span id="bill-template-bill-no">Bill No: N/A</span>
+                <span id="bill-template-date-time">Date: N/A Time: N/A</span>
+            </div>
+            <div style="border-bottom: 1px solid #ccc; margin: 10px 0;"></div>
+        </div>
+
+        <!-- Bill Items Table -->
+        <table id="bill-template-items-table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+                <tr style="text-align: left;">
+                    <th style="padding-bottom: 8px; width: 10%; font-size: 14px;">SL.</th>
+                    <th style="padding-bottom: 8px; width: 60%; font-size: 14px;">Description</th>
+                    <th style="padding-bottom: 8px; width: 30%; text-align: right; font-size: 14px;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Bill items will be injected here -->
+            </tbody>
+        </table>
+
+        <!-- Summary Section -->
+        <div style="text-align: right; font-size: 16px; margin-bottom: 20px;">
+            <div style="margin-bottom: 8px;">
+                <span id="bill-template-subtotal-label">সাবটোটাল:</span> <span id="bill-template-subtotal">0.00</span>
+            </div>
+            <div style="border-bottom: 2px solid #333333; margin: 15px 0;"></div> <!-- Bold separator -->
+            <div style="font-size: 28px; font-weight: bold; color: #1ABC9C;">
+                মোট বিল: <span id="bill-template-grand-total">0.00</span>
+            </div>
+        </div>
+
+        <!-- Bill Footer -->
+        <div style="text-align: center; font-size: 13px; color: #666666;">
+            <p id="bill-template-thank-you-message" style="margin: 0;"></p> <!-- Thank you message here -->
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-button">&times;</span>
+            <h2 class="text-xl font-bold mb-4 text-white">সেটিংস</h2>
+
+            <label for="setting-header-title" class="modal-label">বিলের হেডিং:</label>
+            <input type="text" id="setting-header-title" class="modal-input" value="EXPENSE SUMMARY">
+
+            <label for="setting-subtotal-label" class="modal-label">সাবটোটাল লেবেল:</label>
+            <input type="text" id="setting-subtotal-label" class="modal-input" value="সাবটোটাল:">
+
+            <label for="setting-thank-you-message" class="modal-label">ধন্যবাদ বার্তা:</label>
+            <input type="text" id="setting-thank-you-message" class="modal-input" value="আপনার কেনাকাটার জন্য ধন্যবাদ!">
+
+            <button id="save-settings-btn" class="w-full py-3 mt-4 rounded-lg bg-[#1ABC9C] text-white text-xl font-bold shadow-md hover:brightness-110 active:brightness-90 transition-colors">
+                সেভ করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- Installation Prompt (Hidden by default) -->
+    <div id="install-prompt-container" class="fixed bottom-0 left-0 w-full bg-blue-800 text-white p-4 text-center z-50 transform translate-y-full transition-transform duration-300 ease-out">
+        <p class="mb-2">এই অ্যাপটি আপনার হোম স্ক্রিনে যোগ করুন!</p>
+        <button id="install-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+            ইনস্টল করুন
+        </button>
+        <button id="close-install-prompt" class="absolute top-2 right-2 text-white text-xl">&times;</button>
+    </div>
+
+    <!-- External app.js script -->
+    <script src="app.js" defer></script>
+</body>
+</html>

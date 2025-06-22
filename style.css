@@ -1,0 +1,124 @@
+/* Custom scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(44, 62, 80, 0.6); /* Slightly transparent dark blue */
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(85, 85, 85, 0.7); /* Transparent grey */
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(119, 119, 119, 0.8);
+}
+
+/* Ensure Inter font is available, fallback to sans-serif */
+body {
+    font-family: 'Inter', sans-serif;
+    /* Diffused background for glass effect */
+    background: linear-gradient(135deg, #2c3e50, #1a2c3e);
+    /* Make body fill viewport and center its content */
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Prevent body scroll, let individual panels scroll if needed */
+}
+
+/* Liquid Glass Effect Classes */
+.glass-panel {
+    background-color: rgba(255, 255, 255, 0.08); /* Light transparent base */
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    border: 1px solid rgba(255, 255, 255, 0.18); /* Subtle light border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); /* Soft shadow */
+}
+
+.glass-display {
+    background-color: rgba(0, 0, 0, 0.3); /* Slightly darker transparent */
+    backdrop-filter: blur(15px); /* More blur for display contrast */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Button specific glass styles */
+.glass-btn-dark { /* For numbers, dot */
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.glass-btn-accent { /* For operators, equals, etc. */
+    background-color: rgba(26, 188, 156, 0.5); /* Teal with transparency */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.glass-btn-red { /* For AC, CE */
+    background-color: rgba(231, 76, 60, 0.5); /* Red with transparency */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Modal specific styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.7); /* Black w/ opacity */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none; /* Allows clicks through when hidden */
+}
+.modal.show {
+    opacity: 1;
+    pointer-events: auto; /* Blocks clicks when visible */
+}
+.modal-content {
+    /* Inherits glass-panel, then overrides with more specific modal styles */
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    color: white; /* Text color for modal content */
+}
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+.close-button:hover,
+.close-button:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+/* Input styling within modal */
+.modal-input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.3); /* Lighter border for inputs */
+    background-color: rgba(0, 0, 0, 0.2); /* Transparent input background */
+    color: white;
+}
+.modal-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
