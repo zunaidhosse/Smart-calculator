@@ -1,6 +1,6 @@
 const CACHE_NAME = 'smart-bill-calc-v1';
 const urlsToCache = [
-  './', // Caches the root (index.html)
+  './', // Caches the root (index.html) relative to the service worker's scope
   './index.html',
   './style.css',
   './app.js',
